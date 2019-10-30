@@ -3,16 +3,13 @@ package de.thro.inf.prg3.a03;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import static de.thro.inf.prg3.a03.Cat.State.*;
 
 public class Cat {
 	private static final Logger logger = LogManager.getLogger();
 
-	// valid states
-	public enum State {SLEEPING, HUNGRY, DIGESTING, PLAYFUL, DEAD}
 
 	// initially, animals are sleeping
-	private State state = State.SLEEPING;
+	private State state = new SleepingState(10);// fehlt noch was
 
 	// state durations (set via constructor), ie. the number of ticks in each state
 	private final int sleep;
@@ -31,6 +28,10 @@ public class Cat {
 		this.digest = digest;
 	}
 
+	public void tick(){
+		this.state = this.state.tick(this);
+	}
+	/*
 	public void tick(){
 		logger.info("tick()");
 		time = time + 1;
@@ -72,7 +73,7 @@ public class Cat {
 
 		logger.info(state.name());
 
-	}
+	} */
 
 	/**
 	 * This would be a user interaction: feed the cat to change its state!
@@ -84,28 +85,24 @@ public class Cat {
 		logger.info("You feed the cat...");
 
 		// change state and reset the timer
-		state = State.DIGESTING;
+		state = new DigestingState(10);
 		timeDigesting = 0;
 	}
 
 	public boolean isAsleep() {
-		return state.equals(State.SLEEPING);
+		return state instanceof SleepingState;
 	}
 
-	public boolean isPlayful() {
-		return state.equals(State.PLAYFUL);
-	}
+	public boolean isPlayful() { return state instanceof PlayfulState;}
 
 	public boolean isHungry() {
-		return state.equals(State.HUNGRY);
+		return state instanceof HungryState;
 	}
 
-	public boolean isDigesting() {
-		return state.equals(State.DIGESTING);
-	}
+	public boolean isDigesting() { return state instanceof DigestingState; }
 
 	public boolean isDead() {
-		return state == State.DEAD;
+		return state instanceof DeathState;
 	}
 
 	@Override
